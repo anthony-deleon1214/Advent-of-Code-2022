@@ -1,11 +1,11 @@
 // Importing filesystem from standard library
 use std::fs;
-
 fn main() {
     let input = fs::read_to_string("src/input.txt")
         .expect("Requires input.txt file");
 
     let mut lines = input.lines();
+    let mut priority_score = 0;
 
     loop {
         let mut line = match lines.next() {
@@ -22,11 +22,105 @@ fn main() {
         let comp_length = line_length/2;
         let first_half = &line[..comp_length];
         let second_half = &line[comp_length+1..];
+
+        // Get binary representations of each string half
+        // String halves are unnecessary after this point, so ownership is passed
+        let first_half_bin = create_bit_representation(first_half);
+        let second_half_bin = create_bit_representation(second_half);
+
+        let result = first_half_bin & second_half_bin;
+        priority_score += determine_priority(result);
+        println!("Current priority score is {}", priority_score);
     }
 }
 
 fn create_bit_representation(compartment: &str) -> u64 {
     // Creates a binary value based on the priority of the characters in the string slice
     let mut str_iter = compartment.chars();
-    let bin_rep: u64 = 0;
+    let mut bin_rep: u64 = 0b0000000000000000000000000000000000000000000000000000;
+    let base_char: u64 = 0b1000000000000000000000000000000000000000000000000000;
+    
+    // Loop through each character in input string
+    loop {
+        let curr_char = match str_iter.next() {
+            Some(char) => char,
+            None => break,
+        };
+        // Bit shift base character based on current character
+        let char_binary: u64 = match curr_char {
+            'a' => base_char,
+            'b' => base_char >> 1,
+            'c' => base_char >> 2,
+            'd' => base_char >> 3,
+            'e' => base_char >> 4,
+            'f' => base_char >> 5,
+            'g' => base_char >> 6,
+            'h' => base_char >> 7,
+            'i' => base_char >> 8,
+            'j' => base_char >> 9,
+            'k' => base_char >> 10,
+            'l' => base_char >> 11,
+            'm' => base_char >> 12,
+            'n' => base_char >> 13,
+            'o' => base_char >> 14,
+            'p' => base_char >> 15,
+            'q' => base_char >> 16,
+            'r' => base_char >> 17,
+            's' => base_char >> 18,
+            't' => base_char >> 19,
+            'u' => base_char >> 20,
+            'v' => base_char >> 21,
+            'w' => base_char >> 22,
+            'x' => base_char >> 23,
+            'y' => base_char >> 24,
+            'z' => base_char >> 25,
+            'A' => base_char >> 26,
+            'B' => base_char >> 27,
+            'C' => base_char >> 28,
+            'D' => base_char >> 29,
+            'E' => base_char >> 30,
+            'F' => base_char >> 31,
+            'G' => base_char >> 32,
+            'H' => base_char >> 33,
+            'I' => base_char >> 34,
+            'J' => base_char >> 35,
+            'K' => base_char >> 36,
+            'L' => base_char >> 37,
+            'M' => base_char >> 38,
+            'N' => base_char >> 39,
+            'O' => base_char >> 40,
+            'P' => base_char >> 41,
+            'Q' => base_char >> 42,
+            'R' => base_char >> 43,
+            'S' => base_char >> 44,
+            'T' => base_char >> 45,
+            'U' => base_char >> 46,
+            'V' => base_char >> 47,
+            'W' => base_char >> 48,
+            'X' => base_char >> 49,
+            'Y' => base_char >> 50,
+            'Z' => base_char >> 51,
+            _ => panic!("Non alphabetic character found"),
+        };
+
+        // Bitwise OR between char_binary and bin_rep
+        bin_rep = bin_rep | char_binary;
+    };
+    return bin_rep;
+}
+
+// Takes the 64 bit binary representation of a string and returns a priority number based on
+fn determine_priority(mut bin_rep: u64) -> u32 {
+    let mut shift_count = 0;
+
+    loop {
+        if bin_rep == 1 {
+            break
+        }
+        bin_rep = bin_rep >> 1;
+        shift_count += 1;
+    }
+
+    let priority_value: u32 = 52 - shift_count;
+    priority_value
 }
