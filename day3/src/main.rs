@@ -6,12 +6,15 @@ fn main() {
 
     let mut lines = input.lines();
     let mut priority_score = 0;
+    let mut curr_line = 0;
 
     loop {
         let mut line = match lines.next() {
             Some(line) => line,
             None => break,
         };
+
+        curr_line += 1;
 
         if !line.is_ascii() {
             panic!("Line contains non-ASCII characters")
@@ -30,7 +33,7 @@ fn main() {
 
         let result = first_half_bin & second_half_bin;
         priority_score += determine_priority(result);
-        println!("Current priority score is {}", priority_score);
+        println!("{}: Current priority score is {}", curr_line, priority_score);
     }
 }
 
@@ -110,8 +113,8 @@ fn create_bit_representation(compartment: &str) -> u64 {
 }
 
 // Takes the 64 bit binary representation of a string and returns a priority number based on
-fn determine_priority(mut bin_rep: u64) -> u32 {
-    let mut shift_count = 0;
+fn determine_priority(mut bin_rep: u64) -> u64 {
+    let mut shift_count: u64 = 0;
 
     loop {
         if bin_rep == 1 {
@@ -121,6 +124,6 @@ fn determine_priority(mut bin_rep: u64) -> u32 {
         shift_count += 1;
     }
 
-    let priority_value: u32 = 52 - shift_count;
+    let priority_value: u64 = 52 - shift_count;
     priority_value
 }
