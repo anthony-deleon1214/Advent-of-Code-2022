@@ -10,6 +10,7 @@ fn part1() {
         .expect("Requires input.txt file");
 
     let mut lines = input.lines();
+    
 }
 
 fn load_crates(line: &str, mut stack_vec: Vec<Vec<&str>>) {
@@ -24,7 +25,12 @@ fn load_crates(line: &str, mut stack_vec: Vec<Vec<&str>>) {
         };
         
         char_count += 1;
+        if !char.is_ascii_uppercase() {
+            continue
+        }
+
+        // Calculate index of target stack
         let target_vec = char_count/4;
-        
+
     }
 }
