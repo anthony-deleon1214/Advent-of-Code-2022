@@ -24,12 +24,14 @@ fn main() {
         let line_length = line.len();
         let comp_length = line_length/2;
         let first_half = &line[..comp_length];
-        let second_half = &line[comp_length+1..];
+        let second_half = &line[comp_length..];
 
         // Get binary representations of each string half
         // String halves are unnecessary after this point, so ownership is passed
         let first_half_bin = create_bit_representation(first_half);
         let second_half_bin = create_bit_representation(second_half);
+        //println!("First half binary: {}", first_half_bin);
+        //println!("Second half binary: {}", second_half_bin);
 
         let result = first_half_bin & second_half_bin;
         priority_score += determine_priority(result);
@@ -121,8 +123,8 @@ fn determine_priority(mut bin_rep: u64) -> u64 {
             break
         }
         bin_rep = bin_rep >> 1;
-        shift_count += 1;
-    }
+        shift_count += 1
+    };
 
     let priority_value: u64 = 52 - shift_count;
     priority_value
