@@ -49,7 +49,7 @@ fn part1() {
             Some(line) => line,
             None => break,
         };
-        move_crates(line, &mut stack_vec);
+        move_single_crates(line, &mut stack_vec);
     }
 
     for stack in &mut stack_vec {
@@ -83,8 +83,7 @@ fn load_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     }
 }
 
-fn move_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
-    println!("{}", line);
+fn move_single_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     let digit_arr = parse_digits(line);
     let mut count = digit_arr[0];
     let target_stack = digit_arr[2]-1;
@@ -92,10 +91,7 @@ fn move_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     while count > 0 {
         let moved_crate = match stack_vec[supply_stack].pop() {
             Some(value) => value,
-            None => {
-                println!("Move from {} to {}", supply_stack+1, target_stack+1);
-                panic!("Supplying stack is empty")
-            }
+            None => panic!("Supplying stack is empty")
         };
         stack_vec[target_stack].push(moved_crate);
         count -= 1;
@@ -129,4 +125,20 @@ fn parse_digits(line: &str) -> [usize; 3] {
         digit_count += 1;
     }
     digit_arr
+}
+
+fn move_multiple_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
+    let num_arr = parse_digits(line);
+    let count = num_arr[0];
+    let target_stack = &mut stack_vec[num_arr[2]];
+    let supply_stack = &mut stack_vec[num_arr[1]];
+    let last_supply_index = supply_stack.len()-1;
+    let mut moved_crate_iter = supply_stack.drain(last_supply_index-count..);
+    loop {
+        let moving_crate = match moved_crate_iter.next() {
+            Some(char) => char,
+            None => break
+        };
+        target_stack.push(moving_crate)
+    }
 }
