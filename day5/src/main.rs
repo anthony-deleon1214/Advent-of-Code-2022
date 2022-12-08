@@ -89,7 +89,7 @@ fn move_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     let mut count = digit_arr[0];
     let target_stack = digit_arr[2]-1;
     let supply_stack = digit_arr[1]-1;
-    while count > 1 {
+    while count > 0 {
         let moved_crate = match stack_vec[supply_stack].pop() {
             Some(value) => value,
             None => {
@@ -120,11 +120,12 @@ fn parse_digits(line: &str) -> [usize; 3] {
         if !curr_char.is_ascii_digit() {
             continue;
         };
-        let digit = match curr_char.to_digit(10) {
-            Some(digit) => digit as usize,
-            None => panic!("Character could not be converted to digit")
+        let number: u32 = match curr_word.parse() {
+            Ok(digit) => digit,
+            Err(e) => panic!("Word is not a number")
         };
-        digit_arr[digit_count] = digit;
+        // Needed to parse words into numbers instead of turning characters into digits
+        digit_arr[digit_count] = number as usize;
         digit_count += 1;
     }
     digit_arr
