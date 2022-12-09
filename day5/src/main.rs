@@ -192,8 +192,12 @@ fn move_multiple_crates(line: &str, mut stack_vec: Vec<Vec<char>>) -> Vec<Vec<ch
     while count > 0 {
         let moving_crate = match supply_stack.pop() {
             Some(value) => value,
-            None => panic!()
+            None => {
+                println!("Current line: {}", line);
+                panic!("Supplying stack is empty")
+            }
         };
+        interim_vec.push(moving_crate);
         count -= 1;
     }
     let target_stack = &mut stack_vec[num_arr[1]-1];
