@@ -2,7 +2,7 @@
 use std::fs;
 
 fn main() {
-    part1()
+    part2()
 }
 
 fn part1() {
@@ -50,6 +50,62 @@ fn part1() {
             None => break,
         };
         move_single_crates(line, &mut stack_vec);
+    }
+
+    for stack in &mut stack_vec {
+        let top_value = match stack.pop() {
+            Some(value) => value,
+            None => ' ',
+        };
+        println!("Top of stack: {}", top_value)
+    }
+}
+
+fn part2() {
+    let input = fs::read_to_string("src/input.txt")
+        .expect("Requires input.txt file");
+
+    let mut lines = input.lines();
+    let mut stack_vec: Vec<Vec<char>> = Vec::new();
+    let mut line = match lines.next() {
+        Some(line) => line,
+        None => panic!("First line not found")
+    };
+
+    // Populating the stack vector with empty vectors
+    let line_length: i32 = line.len().try_into().unwrap();
+    let mut count: i32 = line_length/4;
+    while count >= 0 {
+        stack_vec.push(Vec::new());
+        count -= 1;
+    };
+    
+    // Loads crates into the stacks from top to bottom
+    loop {
+        load_crates(line, &mut stack_vec);
+        // Currently this is iterating through the entire document
+        println!("{}", line);
+        line = match lines.next() {
+            Some(line) => line,
+            None => break,
+        };
+        if line.is_empty() {
+            break
+        }
+    };
+
+    // Reversing the stacks
+    for vector in stack_vec.iter_mut() {
+        vector.reverse();
+    };
+
+    // Perform instructions to move crates
+    loop {
+        line = match lines.next() {
+            Some(line) => line,
+            None => break,
+        };
+        stack_vec = move_multiple_crates(line, stack_vec);
     }
 
     for stack in &mut stack_vec {
@@ -127,18 +183,17 @@ fn parse_digits(line: &str) -> [usize; 3] {
     digit_arr
 }
 
-fn move_multiple_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
+// Move multiple crates takes ownership of stack vector
+fn move_multiple_crates(line: &str, mut stack_vec: Vec<Vec<char>>) -> Vec<Vec<char>> {
     let num_arr = parse_digits(line);
-    let count = num_arr[0];
-    let target_stack = &mut stack_vec[num_arr[2]];
-    let supply_stack = &mut stack_vec[num_arr[1]];
-    let last_supply_index = supply_stack.len()-1;
-    let mut moved_crate_iter = supply_stack.drain(last_supply_index-count..);
-    loop {
-        let moving_crate = match moved_crate_iter.next() {
-            Some(char) => char,
-            None => break
-        };
-        target_stack.push(moving_crate)
+    let mut count = num_arr[0];
+    let supply_stack = &mut stack_vec[num_arr[2]-1];
+    let mut interim_vec: Vec<char> = Vec::new();
+    while count > 0 {
+        interim_vec.push(supply_stack.pop().unwrap());
+        count -= 1;
     }
+    let target_stack = &mut stack_vec[num_arr[1]-1];
+    target_stack.push(interim_vec.pop().unwrap());
+    stack_vec
 }
