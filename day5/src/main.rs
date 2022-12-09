@@ -190,7 +190,10 @@ fn move_multiple_crates(line: &str, mut stack_vec: Vec<Vec<char>>) -> Vec<Vec<ch
     let supply_stack = &mut stack_vec[num_arr[2]-1];
     let mut interim_vec: Vec<char> = Vec::new();
     while count > 0 {
-        interim_vec.push(supply_stack.pop().unwrap());
+        let moving_crate = match supply_stack.pop() {
+            Some(value) => value,
+            None => panic!()
+        };
         count -= 1;
     }
     let target_stack = &mut stack_vec[num_arr[1]-1];
