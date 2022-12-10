@@ -5,7 +5,7 @@ fn main() {
     part2()
 }
 
-fn part1() {
+fn _part1() {
     let input = fs::read_to_string("src/input.txt")
         .expect("Requires input.txt file");
 
@@ -49,7 +49,7 @@ fn part1() {
             Some(line) => line,
             None => break,
         };
-        move_single_crates(line, &mut stack_vec);
+        _move_single_crates(line, &mut stack_vec);
     }
 
     for stack in &mut stack_vec {
@@ -105,6 +105,7 @@ fn part2() {
             Some(line) => line,
             None => break,
         };
+        println!("Current line: {}", line);
         stack_vec = move_multiple_crates(line, stack_vec);
     }
 
@@ -139,7 +140,7 @@ fn load_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     }
 }
 
-fn move_single_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
+fn _move_single_crates(line: &str, stack_vec: &mut Vec<Vec<char>>) {
     let digit_arr = parse_digits(line);
     let mut count = digit_arr[0];
     let target_stack = digit_arr[2]-1;
@@ -174,7 +175,7 @@ fn parse_digits(line: &str) -> [usize; 3] {
         };
         let number: u32 = match curr_word.parse() {
             Ok(digit) => digit,
-            Err(e) => panic!("Word is not a number")
+            Err(_e) => panic!("Word is not a number")
         };
         // Needed to parse words into numbers instead of turning characters into digits
         digit_arr[digit_count] = number as usize;
@@ -187,20 +188,24 @@ fn parse_digits(line: &str) -> [usize; 3] {
 fn move_multiple_crates(line: &str, mut stack_vec: Vec<Vec<char>>) -> Vec<Vec<char>> {
     let num_arr = parse_digits(line);
     let mut count = num_arr[0];
-    let supply_stack = &mut stack_vec[num_arr[2]-1];
+    let supply_stack = &mut stack_vec[num_arr[1]-1];
     let mut interim_vec: Vec<char> = Vec::new();
     while count > 0 {
         let moving_crate = match supply_stack.pop() {
             Some(value) => value,
             None => {
-                println!("Current line: {}", line);
+                //println!("Current line: {}", line);
                 panic!("Supplying stack is empty")
             }
         };
         interim_vec.push(moving_crate);
         count -= 1;
     }
-    let target_stack = &mut stack_vec[num_arr[1]-1];
-    target_stack.push(interim_vec.pop().unwrap());
+    let target_stack = &mut stack_vec[num_arr[2]-1];
+    count = num_arr[0];
+    while count > 0 {
+        target_stack.push(interim_vec.pop().unwrap());
+        count -= 1;
+    }
     stack_vec
 }
